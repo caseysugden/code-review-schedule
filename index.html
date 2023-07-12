@@ -32,13 +32,6 @@
   </style>
 </head>
 <body>
-<!--   <form>
-    <label for="weekNum">Enter Week Number:</label>
-    <input type="number" id="weekNum" name="weekNum" min="1" max="1">
-  </form>
-  <button onclick="printSchedule()">Print Schedule</button>
-  <ul id="schedule"></ul> -->
-  
   <button onclick="printSchedule()">Print Schedule</button>
   <ul id="schedule"></ul>
 
@@ -66,18 +59,50 @@
 
     function printSchedule() {
       const week = getWeekNumber(new Date());
-      console.log(week)
       const doubleDevs = [...devs, ...devs];
       const scheduleList = document.getElementById('schedule');
       scheduleList.innerHTML = '';
 
-      for (let i = 0; i < devs.length; i++) {
-        const reviewerIndex = (i + week) % devs.length;
-        const listItem = document.createElement('li');
-        listItem.textContent = `${doubleDevs[i]} reviews ${doubleDevs[reviewerIndex]}`;
-        scheduleList.appendChild(listItem);
-      }
+      const printLine = (i) => {
+        if (i < devs.length) {
+          const reviewerIndex = (i + week) % devs.length;
+          const listItem = document.createElement('li');
+          scheduleList.appendChild(listItem);
+
+          // Simulate typing effect
+          const reviewText = `${doubleDevs[i]} reviews ${doubleDevs[reviewerIndex]}`;
+          typeOutText(listItem, reviewText, () => printLine(i + 1));
+        }
+      };
+
+      printLine(0);
     }
+
+    function typeOutText(element, text, callback) {
+      let index = 0;
+
+      function type() {
+        if (index < text.length) {
+          element.textContent += text.charAt(index);
+          index++;
+          setTimeout(type, getRandomDelay());
+        } else {
+          callback();
+        }
+      }
+
+      type();
+    }
+
+    function getRandomDelay() {
+      // Adjust the typing speed here (in milliseconds)
+      const minDelay = 50;
+      const maxDelay = 75;
+      return Math.random() * (maxDelay - minDelay) + minDelay;
+    }
+
+    // Automatically print the schedule
+    printSchedule();
   </script>
 </body>
 </html>
