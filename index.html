@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Code Review Schedule</title>
+</head>
+<body>
+<!--   <form>
+    <label for="weekNum">Enter Week Number:</label>
+    <input type="number" id="weekNum" name="weekNum" min="1" max="1">
+  </form>
+  <button onclick="printSchedule()">Print Schedule</button>
+  <ul id="schedule"></ul> -->
+  
+  <button onclick="printSchedule()">Print Schedule</button>
+  <ul id="schedule"></ul>
+
+  <script>
+    const devs = ["d", "l", "m", "j", "t", "b", "c", "n"];
+
+    function getWeekNumber(date) {
+      const currentDate = new Date(date);
+      currentDate.setHours(0, 0, 0, 0);
+
+      const wednesday = 3; // Wednesday (0 - Sunday, 1 - Monday, ..., 6 - Saturday)
+      const currentDay = currentDate.getDay();
+
+      let daysUntilWednesday = wednesday - currentDay;
+      if (daysUntilWednesday < 0) {
+        daysUntilWednesday += 7; // Add 7 days to reach next Wednesday
+      }
+
+      const targetDate = new Date(currentDate.getTime() + daysUntilWednesday * 86400000);
+      const firstDayOfYear = new Date(targetDate.getFullYear(), 0, 1);
+      const pastDaysOfYear = (targetDate - firstDayOfYear) / 86400000;
+
+      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7) + 5;
+    }
+
+    function printSchedule() {
+      const week = getWeekNumber(new Date());
+      console.log(week)
+      const doubleDevs = [...devs, ...devs];
+      const scheduleList = document.getElementById('schedule');
+      scheduleList.innerHTML = '';
+
+      for (let i = 0; i < devs.length; i++) {
+        const reviewerIndex = (i + week) % devs.length;
+        const listItem = document.createElement('li');
+        listItem.textContent = `${doubleDevs[i]} reviews ${doubleDevs[reviewerIndex]}`;
+        scheduleList.appendChild(listItem);
+      }
+    }
+  </script>
+</body>
+</html>
