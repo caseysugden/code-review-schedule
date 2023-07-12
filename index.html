@@ -26,14 +26,14 @@
 <body>
   <ul id="schedule"></ul>
   <script>
-    const devs = ["Dillon", "Lily", "Micah", "John", "Tanner", "Brian", "Casey", "Nick"];
+    const devs = ["Nick", "Casey", "Brian", "Tanner", "John", "Micah", "Lily", "Dillon"];
 
     function getWeekNumber(date) {
       const currentDate = new Date(date);
       currentDate.setHours(0, 0, 0, 0);
 
       const wednesday = 3; // Wednesday (0 - Sunday, 1 - Monday, ..., 6 - Saturday)
-      const currentDay = currentDate.getDay();
+      const currentDay = currentDate.getDay() - 18; // This aligns it with the order we started on (17/22/2023)
 
       let daysUntilWednesday = wednesday - currentDay;
       if (daysUntilWednesday < 0) {
@@ -44,7 +44,7 @@
       const firstDayOfYear = new Date(targetDate.getFullYear(), 0, 1);
       const pastDaysOfYear = (targetDate - firstDayOfYear) / 86400000;
 
-      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7) + 5;
+      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
     }
 
     function printSchedule() {
