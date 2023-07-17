@@ -4,95 +4,87 @@
   <title>Code Review Schedule</title>
   <style>
     body {
-      background-color: #f1f1f1;
+      background-color: #f2f2f2;
       font-family: Arial, sans-serif;
-      color: #333;
+      margin: 0;
+      padding: 20px;
     }
 
-    h1 {
-      text-align: center;
+    #reviewSchedule {
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
     }
 
-    ul {
-      list-style-type: none;
-      padding: 0;
-    }
-
-    li {
-      margin-bottom: 10px;
+    #copyButton {
+      background-color: #4caf50;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
     }
   </style>
 </head>
+
 <body>
-  <ul id="schedule"></ul>
+  <div id="reviewSchedule"></div>
+  <button id="copyButton">Copy Schedule</button>
+
   <script>
-    const devs = ["Nick", "Casey", "Brian", "Tanner", "John", "Micah", "Lily", "Dillon"];
-
-    function getWeekNumber(date) {
-      const currentDate = new Date(date);
-      currentDate.setHours(0, 0, 0, 0);
-
-      const wednesday = 3; // Wednesday (0 - Sunday, 1 - Monday, ..., 6 - Saturday)
-      const currentDay = currentDate.getDay() - 18; // This aligns it with the order we started on (17/22/2023)
-
-      let daysUntilWednesday = wednesday - currentDay;
-      if (daysUntilWednesday < 0) {
-        daysUntilWednesday += 7; // Add 7 days to reach next Wednesday
+    function createNameArray(swapCount = 0) {
+      const arr = [
+        "Tanner",
+        "Brian",
+        "Casey",
+        "Nick",
+        "Dillon",
+        "Lily",
+        "Micah",
+        "John",
+      ];
+      for (let i = 0; i < Math.abs(swapCount); i++) {
+        arr.push(arr.shift());
       }
-
-      const targetDate = new Date(currentDate.getTime() + daysUntilWednesday * 86400000);
-      const firstDayOfYear = new Date(targetDate.getFullYear(), 0, 1);
-      const pastDaysOfYear = (targetDate - firstDayOfYear) / 86400000;
-
-      return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+      return arr;
     }
 
-    function printSchedule() {
-      const week = getWeekNumber(new Date());
-      const doubleDevs = [...devs, ...devs];
-      const scheduleList = document.getElementById('schedule');
-      scheduleList.innerHTML = '';
+    const startDate = new Date(2023, 6, 12, 14);
+    const todayDate = new Date();
+    const weekMilli = 1_000 * 60 * 60 * 24 * 7;
+    const wednesdaysSince = Math.ceil(
+      (todayDate.getTime() - startDate.getTime()) / weekMilli
+    );
 
-      const printLine = (i) => {
-        if (i < devs.length) {
-          const reviewerIndex = (i + week) % devs.length;
-          const listItem = document.createElement('li');
-          scheduleList.appendChild(listItem);
+    const defaultArr = createNameArray();
+    const compareArr = createNameArray(
+      (wednesdaysSince + 1) % defaultArr.length === 0
+        ? wednesdaysSince + 2
+        : wednesdaysSince + 1
+    );
 
-          // Simulate typing effect
-          const reviewText = `${doubleDevs[i]} reviews ${doubleDevs[reviewerIndex]}`;
-          typeOutText(listItem, reviewText, () => printLine(i + 1));
-        }
-      };
-
-      printLine(0);
+    const reviewScheduleElement = document.getElementById("reviewSchedule");
+    for (let i = 0; i < defaultArr.length; i++) {
+      const review = document.createElement("p");
+      review.textContent = `${defaultArr[i]} reviews ${compareArr[i]}`;
+      reviewScheduleElement.appendChild(review);
     }
 
-    function typeOutText(element, text, callback) {
-      let index = 0;
+    const copyButton = document.getElementById("copyButton");
+    copyButton.addEventListener("click", copyToClipboard);
 
-      function type() {
-        if (index < text.length) {
-          element.textContent += text.charAt(index);
-          index++;
-          setTimeout(type, getRandomDelay());
-        } else {
-          callback();
-        }
-      }
+    function copyToClipboard() {
+      const scheduleText = reviewScheduleElement.innerText;
 
-      type();
+      navigator.clipboard.writeText(scheduleText)
+        .then(() => {
+          alert("Schedule copied to clipboard!");
+        })
+        .catch((error) => {
+          console.error("Failed to copy schedule:", error);
+        });
     }
-
-    function getRandomDelay() {
-      // Adjust the typing speed here (in milliseconds)
-      const minDelay = 10;
-      const maxDelay = 60;
-      return Math.random() * (maxDelay - minDelay) + minDelay;
-    }
-
-    // Automatically print the schedule
-    printSchedule();
   </script>
 </body>
 </html>
