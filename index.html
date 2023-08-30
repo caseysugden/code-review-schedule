@@ -51,19 +51,18 @@
       return arr;
     }
 
-    const startDate = new Date(2023, 6, 12, 14);
+    const startDate = new Date(2023, 7, 30, 14);
     const todayDate = new Date();
     const weekMilli = 1_000 * 60 * 60 * 24 * 7;
     const wednesdaysSince = Math.ceil(
-      (todayDate.getTime() - startDate.getTime()) / weekMilli
-    );
+  (todayDate.getTime() - startDate.getTime()) / weekMilli
+);
 
-    const defaultArr = createNameArray();
-    const compareArr = createNameArray(
-      (wednesdaysSince + 1) % defaultArr.length === 0
-        ? wednesdaysSince + 2
-        : wednesdaysSince + 1
-    );
+const defaultArr = createNameArray();
+// +1 because wednesdaySince at that start is 0, and we'd be reviewing ourselves.
+const compareArr = createNameArray(
+  wednesdaysSince + Math.floor(wednesdaysSince / defaultArr.length) + 1
+);
 
     const reviewScheduleElement = document.getElementById("reviewSchedule");
     for (let i = 0; i < defaultArr.length; i++) {
